@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuc.xnfz.mapper.UserMapper">
+    <resultMap id="userMap" type="com.nuc.xnfz.bean.User">
+        <id property="userid" column="userid"/>
+        <result property="username" column="username"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="phone" column="phone"/>
+        <result property="create_date" column="create_date"/>
+        <collection property="roleList" column="userid"
+        ofType="com.nuc.xnfz.bean.Role"
+        select="com.nuc.xnfz.mapper.UserRoleMapper.getRolesByUserId">
+            <id property="roleid" column="roleid"/>
+            <result property="rolename" column="rolename"/>
+        </collection>
+        <collection property="courseList" column="userid"
+                    ofType="com.nuc.xnfz.bean.Course"
+                    select="com.nuc.xnfz.mapper.StudentCourseMapper.getCourseByStudentId">
+        </collection>
+
+    </resultMap>
+    <select id="findById" parameterType="Integer" resultMap="userMap">
+        select * from user where userid=#{userid}
+    </select>
+
+    <select id="findAll" resultMap="userMap">
+        select *
+        from user u
+        <if test="roleid != null and roleid != ''">
+            INNER JOIN user_role ur ON u.userid = ur.userid
+        </if>
+
+        <where>
+            <if test="user.username != null and user.username != ''">
+                and username like CONCAT('%', #{user.username}, '%')
+            </if>
+            <if test="user.phone != null and user.phone != ''">
+                and phone like CONCAT('%', #{user.phone}, '%')
+            </if>
+            <if test="createDatetime != null and createDatetime != ''">
+                and create_datetime like CONCAT('%', #{createDatetime}, '%')
+            </if>
+            <if test="roleid != null and roleid != ''">
+                and ur.roleid = #{roleid}
+            </if>
+            <if test="user.classid != null and user.classid != ''">
+                and classid = #{user.classid}
+            </if>
+        </where>
+        limit #{beginIndex},#{pageSize}
+    </select>
+
+    <select id="findUserByRoleid" resultMap="userMap" parameterType="Integer">
+        select *
+        from user u
+        INNER JOIN user_role ur ON u.userid = ur.userid
+
+        where ur.roleid = #{roleid}
+    </select>
+
+    <select id="findTotal" resultType="Integer">
+        select COUNT(*)
+        from user u
+        <if test="roleid != null and roleid != ''">
+            INNER JOIN user_role ur ON u.userid = ur.userid
+        </if>
+
+        <where>
+            <if test="user.username != null and user.username != ''">
+                and username like CONCAT('%', #{user.username}, '%')
+            </if>
+            <if test="user.phone != null and user.phone != ''">
+                and phone like CONCAT('%', #{user.phone}, '%')
+            </if>
+            <if test="createDatetime != null and createDatetime != ''">
+                and create_datetime like CONCAT('%', #{createDatetime}, '%')
+            </if>
+            <if test="roleid != null and roleid != ''">
+                and ur.roleid = #{roleid}
+            </if>
+            <if test="user.classid != null and user.classid != ''">
+                and u.classid = #{user.classid}
+            </if>
+        </where>
+    </select>
+
+    <select id="getStuNumByClassid" resultType="Integer">
+        select COUNT(*)
+        from user
+        where classid = #{classid}
+    </select>
+
+    <select id="getStuByClassid" >
+        select *
+        from user
+        where classid = #{classid}
+    </select>
+
+    <update id="removeClassid">
+        update user set classid=0
+        where classid=#{classid}
+    </update>
+
+</mapper>

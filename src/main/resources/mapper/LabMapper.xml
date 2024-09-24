@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuc.xnfz.mapper.LabMapper">
+    <resultMap id="equipMap" type="com.nuc.xnfz.bean.Lab">
+        <id column="labid" property="labid"/>
+        <collection property="equipmentList" column="labid"
+                    ofType="com.nuc.xnfz.bean.Equipment"
+                    select="com.nuc.xnfz.mapper.LabEquipmentMapper.getEquipmentByLabId">
+        </collection>
+
+    </resultMap>
+
+    <select id="findById" parameterType="Integer" resultMap="equipMap">
+        select * from lab where labid=#{labid}
+    </select>
+
+    <select id="findAll" resultMap="equipMap">
+        select *
+        from lab l
+        <where>
+            <if test="lab.labName != null and lab.labName != ''">
+                and lab_name like CONCAT('%', #{lab.labName}, '%')
+            </if>
+            <if test="lab.labLocation != null and lab.labLocation != ''">
+                and lab_location like CONCAT('%', #{lab.labLocation}, '%')
+            </if>
+        </where>
+
+        limit #{beginIndex},#{pageSize}
+    </select>
+
+    <select id="findTotal" resultType="Integer">
+        select COUNT(*)
+        from lab l
+        <where>
+            <if test="lab.labName != null and lab.labName != ''">
+                and lab_name like CONCAT('%', #{lab.labName}, '%')
+            </if>
+            <if test="lab.labLocation != null and lab.labLocation != ''">
+                and lab_location like CONCAT('%', #{lab.labLocation}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>

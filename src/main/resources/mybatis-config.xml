@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeHandlers>
+        <!--注册自定义的方法-->
+        <typeHandler handler="com.nuc.xnfz.common.DateTypeHandler"/>
+    </typeHandlers>
+
+    <mappers>
+        <mapper resource="UserRoleMapper.xml"/>
+        <mapper resource="UserMapper.xml"/>
+        <mapper resource="RoleMapper.xml"/>
+        <mapper resource="TeacherCourseMapper.xml"/>
+        <mapper resource="CourseMapper.xml"/>
+        <mapper resource="TrainingPlanMapper.xml"/>
+        <mapper resource="PlanCourseMapper.xml"/>
+        <mapper resource="StudentCourseMapper.xml"/>
+        <mapper resource="LabCourseMapper.xml"/>
+        <mapper resource="LabEquipmentMapper.xml"/>
+    </mappers>
+
+
+</configuration>
+

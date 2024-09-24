@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nuc.xnfz.mapper.TrainingPlanMapper">
+    <resultMap id="TraningPlanMap" type="com.nuc.xnfz.bean.Trainingplan">
+        <id property="planid" column="planid"/>
+        <result property="plan_name" column="planName"/>
+        <result property="plan_opentime" column="planOpentime"/>
+        <result property="plan_endtime" column="planEndtime"/>
+        <result property="plan_goal" column="planGoal"/>
+        <result property="userid" column="userid"/>
+        <collection property="courseList" column="planid"
+                    ofType="com.nuc.xnfz.bean.Course"
+                    select="com.nuc.xnfz.mapper.PlanCourseMapper.getCourseByPlanId">
+        </collection>
+    </resultMap>
+    <select id="findByid" resultMap="TraningPlanMap" parameterType="Integer">
+        select * from trainingplan where planid=#{planid}
+    </select>
+
+    <select id="findAll" resultMap="TraningPlanMap">
+        select *
+        from trainingplan
+        <where>
+            <if test="traningPlan.planName != null and traningPlan.planName != ''">
+                and plan_name like CONCAT('%', #{traningPlan.planName}, '%')
+            </if>
+            <if test="traningPlan.userid != null and traningPlan.userid != ''">
+                and userid like CONCAT('%', #{traningPlan.userid}, '%')
+            </if>
+            <if test="plan_opentime != null and plan_opentime != ''">
+                and plan_opentime like CONCAT('%', #{plan_opentime}, '%')
+            </if>
+
+        </where>
+        limit #{beginIndex},#{pageSize}
+    </select>
+
+    <select id="listAll" resultMap="TraningPlanMap">
+        select * from trainingplan
+    </select>
+
+    <select id="findTotal" resultType="Integer">
+        select COUNT(*)
+        from trainingplan
+        <where>
+            <if test="traningPlan.planName != null and traningPlan.planName != ''">
+                and plan_name like CONCAT('%', #{traningPlan.planName}, '%')
+            </if>
+            <if test="traningPlan.userid != null and traningPlan.userid != ''">
+                and userid like CONCAT('%', #{traningPlan.userid}, '%')
+            </if>
+            <if test="plan_opentime != null and plan_opentime != ''">
+                and plan_opentime like CONCAT('%', #{plan_opentime}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuc.xnfz.mapper.StudentCourseMapper">
+
+    <resultMap type="com.nuc.xnfz.bean.Course"
+               id="resultCourseMap">
+        <id property="courseid" column="courseid"/>
+        <result property="coursename" column="coursename"/>
+        <result property="coursedetail" column="coursedetail"/>
+        <result property="opentime" column="opentime"/>
+        <collection property="userList" column="courseid"
+                    ofType="com.nuc.xnfz.bean.User"
+                    select="com.nuc.xnfz.mapper.TeacherCourseMapper.getTeacherByCourseId">
+            <id property="userid" column="userid"/>
+            <result property="username" column="username"/>
+            <result property="account" column="account"/>
+            <result property="password" column="password"/>
+            <result property="email" column="email"/>
+            <result property="phone" column="phone"/>
+            <result property="phone" column="phone"/>
+            <result property="create_date" column="create_date"/>
+            <result property="classid" column="classid"/>
+        </collection>
+        <collection property="stuList" column="courseid"
+                    ofType="com.nuc.xnfz.bean.User"
+                    select="com.nuc.xnfz.mapper.StudentCourseMapper.getStudentByCourseId">
+        </collection>
+        <collection property="labList" column="courseid"
+                    ofType="com.nuc.xnfz.bean.Lab"
+                    select="com.nuc.xnfz.mapper.LabCourseMapper.getLabByCourseId">
+        </collection>
+    </resultMap>
+
+
+    <!-- 根据一个用户ID,查看这个学生所对应的所有课程-->
+    <select id="getCourseByStudentId" parameterType="Integer">
+        SELECT
+            c.courseid,
+            c.coursename,
+            c.coursedetail,
+            c.opentime,
+            sc.grade AS grade
+        FROM
+            course c
+                INNER JOIN
+            student_course sc ON c.courseid = sc.courseid
+        WHERE
+            sc.userid = #{studentId};
+    </select>
+
+
+    <select id="getCourseByStu" resultMap="resultCourseMap">
+        SELECT
+            c.*,sc.userid,sc.grade AS grade
+        FROM
+            course c,student_course sc
+        WHERE
+            sc.userid = #{studentid} and sc.courseid = c.courseid
+            LIMIT #{beginIndex},#{pageSize};
+    </select>
+
+    <select id="getCourseTotalByStu" >
+        SELECT
+            COUNT(*)
+        FROM
+            course c
+                INNER JOIN
+            student_course sc ON c.courseid = sc.courseid
+        WHERE
+            sc.userid = #{studentid};
+    </select>
+
+    <!-- 根据一个课程ID,查看这个课程所对应的所有用户-->
+    <select id="getStudentByCourseId"  parameterType="Integer">
+        select u.*,sc.courseid,sc.grade AS grade
+        from user u,student_course sc
+        where u.userid=sc.userid and sc.courseid = #{courseid}
+    </select>
+
+    <select id="getidByUserid"  parameterType="Integer">
+        select id
+        from student_course sc
+        where sc.userid = #{userid}
+    </select>
+
+    <select id="getidByUserCourseid"  parameterType="Integer">
+        select id
+        from student_course sc
+        where sc.userid = #{userid} and sc.courseid = #{courseid}
+    </select>
+
+    <!-- 根据一个课程ID,分页查看这个课程所对应的所有用户-->
+    <select id="getStudentPagelistByCourseId"  parameterType="Integer">
+        select u.*,sc.courseid,sc.grade AS grade
+        from user u,student_course sc
+        where u.userid=sc.userid and sc.courseid = #{courseid}
+            limit #{beginIndex},#{pageSize}
+    </select>
+
+    <!-- 根据一个课程ID,分页查看这个课程所对应的所有用户数目-->
+    <select id="getStudentTotalByCourseId"  parameterType="Integer">
+        select COUNT(*)
+        from user u,student_course sc
+        where u.userid=sc.userid and sc.courseid = #{courseid}
+    </select>
+
+</mapper>

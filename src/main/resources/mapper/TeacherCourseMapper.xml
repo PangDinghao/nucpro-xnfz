@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nuc.xnfz.mapper.TeacherCourseMapper">
+
+    <!-- 根据一个教师用户ID,查看这个教师所对应的所有课程-->
+<!--    <resultMap type="com.nuc.xnfz.bean.Course"-->
+<!--               id="resultRoleMap">-->
+<!--        <id property="courseid" column="courseid"/>-->
+<!--        <result property="coursename" column="coursename"/>-->
+<!--        <result property="coursedetail" column="coursedetail"/>-->
+<!--        <result property="Opentime" column="Opentime"/>-->
+<!--    </resultMap>-->
+    <resultMap type="com.nuc.xnfz.bean.Course"
+               id="resultCourseMap">
+        <id property="courseid" column="courseid"/>
+        <result property="coursename" column="coursename"/>
+        <result property="coursedetail" column="coursedetail"/>
+        <result property="opentime" column="opentime"/>
+        <collection property="userList" column="courseid"
+                    ofType="com.nuc.xnfz.bean.User"
+                    select="com.nuc.xnfz.mapper.TeacherCourseMapper.getTeacherByCourseId">
+            <id property="userid" column="userid"/>
+            <result property="username" column="username"/>
+            <result property="account" column="account"/>
+            <result property="password" column="password"/>
+            <result property="email" column="email"/>
+            <result property="phone" column="phone"/>
+            <result property="phone" column="phone"/>
+            <result property="create_date" column="create_date"/>
+            <result property="classid" column="classid"/>
+        </collection>
+        <collection property="stuList" column="courseid"
+                    ofType="com.nuc.xnfz.bean.User"
+                    select="com.nuc.xnfz.mapper.StudentCourseMapper.getStudentByCourseId">
+        </collection>
+        <collection property="labList" column="courseid"
+                    ofType="com.nuc.xnfz.bean.Lab"
+                    select="com.nuc.xnfz.mapper.LabCourseMapper.getLabByCourseId">
+        </collection>
+    </resultMap>
+    <select id="getCourseByTeacherId" resultMap="resultCourseMap" parameterType="Integer">
+        select c.*,tc.userid
+        from course c,teacher_course tc
+        where c.courseid=tc.courseid and tc.userid=#{userid}
+        limit #{beginIndex},#{pageSize}
+    </select>
+
+    <!-- 根据一个课程ID,查看这个课程所对应的所有教师用户信息-->
+    <resultMap type="com.nuc.xnfz.bean.User"
+               id="resultUserMap">
+        <id property="userid" column="userid"/>
+        <result property="username" column="username"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="phone" column="phone"/>
+        <result property="create_date" column="create_date"/>
+        <result property="classid" column="classid"/>
+
+        <collection property="roleList" column="userid"
+                    ofType="com.nuc.xnfz.bean.Role"
+                    select="com.nuc.xnfz.mapper.UserRoleMapper.getRolesByUserId">
+            <id property="roleid" column="roleid"/>
+            <result property="rolename" column="rolename"/>
+        </collection>
+
+    </resultMap>
+    <select id="getTeacherByCourseId" resultMap="resultUserMap" parameterType="Integer">
+        select u.*,tc.courseid
+        from user u,teacher_course tc
+        where u.userid=tc.userid and tc.courseid = #{courseid}
+    </select>
+
+    <!--根据courseid和userid查询主键-->
+    <select id="getIdByCourseUserid" resultType="Integer" >
+        select id
+        from teacher_course
+        where courseid = #{courseid}
+          and userid = #{userid}
+    </select>
+
+    <!--根据userid查询主键序列-->
+    <select id="getIdByCourseid" resultType="Integer" >
+        select id
+        from teacher_course
+        where courseid = #{courseid}
+    </select>
+
+    <select id="getCourseTotalByTeacher" >
+        SELECT
+            COUNT(*)
+        from course c,teacher_course tc
+        where c.courseid=tc.courseid and tc.userid=#{teacherid}
+    </select>
+</mapper>

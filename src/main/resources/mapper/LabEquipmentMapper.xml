@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nuc.xnfz.mapper.LabEquipmentMapper">
+    <select id="getEquipmentByLabId" >
+        select e.*,le.labid
+        from equipment e,lab_equipment le
+        where e.equipmentid=le.equipmentid and le.labid=#{labid}
+    </select>
+    <select id="getIdBylabid">
+        select id from lab_equipment where labid=#{labid}
+    </select>
+</mapper>

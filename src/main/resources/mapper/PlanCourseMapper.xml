@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nuc.xnfz.mapper.PlanCourseMapper">
+    <resultMap type="com.nuc.xnfz.bean.Course"
+               id="resultCourseMap">
+        <id property="courseid" column="courseid"/>
+        <result property="coursename" column="coursename"/>
+        <result property="coursedetail" column="coursedetail"/>
+        <result property="opentime" column="opentime"/>
+        <collection property="userList" column="courseid"
+                    ofType="com.nuc.xnfz.bean.User"
+                    select="com.nuc.xnfz.mapper.TeacherCourseMapper.getTeacherByCourseId">
+        </collection>
+
+
+    </resultMap>
+    <!-- 根据一个实训计划ID,查看这个实训计划所对应的所有课程-->
+    <select id="getCourseByPlanId" resultMap="resultCourseMap">
+        select c.*,pc.planid
+        from course c,plan_course pc
+        where c.courseid=pc.courseid and pc.planid=#{planid}
+    </select>
+    <!--根据trainingplanid和courseid查询主键-->
+    <select id="getIdByPlanCourseid" resultType="Integer">
+        select id from plan_course
+        where planid =#{planid}
+        and courseid =#{courseid}
+    </select>
+    <!--根据planid查询主键-->
+    <select id="getIdByPlanid" resultType="Integer" >
+        select id
+        from plan_course
+        where planid = #{planid}
+    </select>
+
+
+
+</mapper>
